@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.gaopan.utilsgarage.Utils.LogUtils;
 import com.gaopan.utilsgarage.Utils.PermissionUtil;
 
 import java.util.ArrayList;
@@ -23,14 +24,25 @@ public class MainActivity extends AppCompatActivity implements PermissionUtil.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         View view = new View(this);
-//        requestCameraPermisson(view);
+        requestCameraPermisson(view);
 //        goPermissionsSettings(view);
 //        PermissionUtil.requestPerssions(this,111,Manifest.permission.READ_SMS);
 //        isReadSMSPermissionDenied(view);
 //        readSMS(view);
+//        LogUtils.log("MainActivity oncreate 2018几点到几点基督教的举动激动京东就");
+//        LogUtils.log("哦哦额U了为U诶");
+        LogUtils.setIsDebug(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LogUtils.log("MainActivity oncreate 2018几点到几点基督教的举动激动京东就");
+        LogUtils.log("哦哦额U了为U诶-------77777777777777777777-------------------------");
     }
 
     public void requestCameraPermisson(View view) {
+        //叶酸得了
         //manifest.xml清单中需配置<uses-permission android:name="android.permission.CAMERA" />
         //manifest.xml清单中需配置<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
         //manifest.xml清单中需配置<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
