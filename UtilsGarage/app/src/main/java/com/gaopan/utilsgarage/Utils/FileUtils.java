@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,28 +31,6 @@ public class FileUtils {
 
     private static String padFilePath = "/sdcard/driver.ini";
 
-
-    /**
-     * 写文本文件 在Android系统中，文件保存在 /data/data/PACKAGE_NAME/files 目录下
-     *
-     * @param context
-     * @param fileName
-     * @param content
-     */
-    public static void write(Context context, String fileName, String content) {
-        if (content == null)
-            content = "";
-
-        try {
-            FileOutputStream fos = context.openFileOutput(fileName,
-                    Context.MODE_PRIVATE);
-            fos.write(content.getBytes());
-
-            fos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 读取文本文件
@@ -89,13 +68,6 @@ public class FileUtils {
         return null;
     }
 
-    public static File createFile(String folderPath, String fileName) {
-        File destDir = new File(folderPath);
-        if (!destDir.exists()) {
-            destDir.mkdirs();
-        }
-        return new File(folderPath, fileName + fileName);
-    }
 
     /**
      * @param buffer
@@ -143,18 +115,6 @@ public class FileUtils {
     }
 
     /**
-     * 根据文件绝对路径获取文件名
-     *
-     * @param filePath
-     * @return
-     */
-    public static String getFileName(String filePath) {
-        if (null == filePath || "".equals(filePath))
-            return "";
-        return filePath.substring(filePath.lastIndexOf(File.separator) + 1);
-    }
-
-    /**
      * 根据文件的绝对路径获取文件名但不包含扩展名
      *
      * @param filePath
@@ -176,8 +136,9 @@ public class FileUtils {
      * @return
      */
     public static String getFileFormat(String fileName) {
-        if (null == fileName || "".equals(fileName))
+        if (null == fileName || "".equals(fileName)) {
             return "";
+        }
 
         int point = fileName.lastIndexOf('.');
         return fileName.substring(point + 1);
@@ -206,8 +167,9 @@ public class FileUtils {
      * @return
      */
     public static String getFileSize(long size) {
-        if (size <= 0)
+        if (size <= 0) {
             return "0";
+        }
         java.text.DecimalFormat df = new java.text.DecimalFormat("##.##");
         float temp = (float) size / 1024;
         if (temp >= 1024) {
@@ -402,10 +364,12 @@ public class FileUtils {
                     status = false;
                 }
 
-            } else
+            } else {
                 status = false;
-        } else
+            }
+        } else {
             status = false;
+        }
         return status;
     }
 
@@ -432,123 +396,13 @@ public class FileUtils {
                     se.printStackTrace();
                     status = false;
                 }
-            } else
+            } else {
                 status = false;
-        } else
+            }
+        } else {
             status = false;
+        }
         return status;
-    }
-
-    /**
-     * @param msgID
-     * @param log
-     * @param isLog
-     * @return
-     */
-    public static String saveLog(String msgID, String log, boolean isLog,
-                                 String fileName) {
-        if (!isLog) {
-            return null;
-        }
-        SimpleDateFormat logTime = new SimpleDateFormat("yyyyMMddHHmmss");
-        Date logD = new Date(System.currentTimeMillis());
-        StringBuffer sb = new StringBuffer();
-        if (msgID != null && !msgID.equals("")) {
-            sb.append(logTime.format(logD) + "【" + msgID + "】\n");
-        } else {
-            sb.append(logTime.format(logD) + "\t\t");
-        }
-        String logStr = "";
-        String splitStr = "body";
-        String[] tempStr = log.split(splitStr);
-        if (tempStr.length > 1) {
-            logStr += tempStr[0] + "\n" + splitStr;
-            String body = tempStr[1].replaceAll(",", "");
-            tempStr = body.split("]");
-            for (int i = 0; i < tempStr.length; i++) {
-                if (i != tempStr.length - 2) {
-                    logStr += tempStr[i] + "],\n";
-                } else {
-                    logStr += tempStr[i] + "";
-                }
-            }
-            sb.append(logStr.substring(0, logStr.length() - 4));
-        } else {
-            sb.append(log);
-        }
-        sb.append("\n");
-        SimpleDateFormat logFt = new SimpleDateFormat("yyyyMMdd");
-        Writer writer = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(writer);
-        printWriter.close();
-        try {
-            long timestamp = System.currentTimeMillis();
-            Date d = new Date(timestamp);
-            String time = logFt.format(d);
-            if (null == fileName || fileName.equals("")) {
-                fileName = "log";
-            }
-            fileName += ("-" + time + ".txt");
-            if (Environment.getExternalStorageState().equals(
-                    Environment.MEDIA_MOUNTED)) {
-                File dir = new File(path);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-                File f = new File(path + fileName);
-                if (!f.exists()) {
-                    f.createNewFile();
-                }
-                FileOutputStream fost = new FileOutputStream(f, true);
-                BufferedWriter myo = new BufferedWriter(new OutputStreamWriter(
-                        fost, "GBK"));
-                myo.write(sb.toString());
-                myo.close();
-            }
-            return fileName;
-        } catch (Exception e) {
-            Log.e("FileUtils", "an error occured while writing file...", e);
-        }
-        return null;
-    }
-
-    public static String saveLog(String log, boolean isLog, String fileName) {
-        return saveLog(log, "", isLog, fileName);
-    }
-
-    public static String saveLog(String log, boolean isLog) {
-        return saveLog(log, "", isLog, null);
-    }
-
-    public String readSDFile(String fileName) {
-
-        StringBuffer sb = new StringBuffer();
-
-        File file = new File(padFilePath + "//" + fileName);
-        if (!file.exists()) {
-            return "";
-        }
-        try {
-
-            FileInputStream fis = new FileInputStream(file);
-
-            int c;
-
-            while ((c = fis.read()) != -1) {
-
-                sb.append((char) c);
-
-            }
-            fis.close();
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-        }
-
-        return sb.toString();
-
     }
 
     public static List<File> list(File dir, List<File> fs, int type) {
@@ -631,57 +485,27 @@ public class FileUtils {
         return bea;
     }
 
-    static class Fileter implements FilenameFilter {
-        private final String ext;
-
-        public Fileter(String ext) {
-            this.ext = ext;
-        }
-
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith(ext);
-
-        }
-    }
-
     /**
-     * @param oldPathFile
-     * @param newPathFile
+     * @param context
+     * @param filePath    文本文件完整绝对路径及文件名
+     * @param fileContent 文本文件内容
+     * @Description 新建文件
      */
-    public static void copyFile(String oldPathFile, String newPathFile) {
+    public static void createFileAndWriteContent(Context context, String filePath, String fileContent,boolean isAppend) {
+
         try {
-            int bytesum = 0;
-            int byteread = 0;
-            File oldfile = new File(oldPathFile);
-            if (oldfile.exists()) { // 文件存在
-                InputStream inStream = new FileInputStream(oldPathFile); // 读入源文�?
-                File n = new File(newPathFile);
-                if (!n.exists()) {
-                    n.createNewFile();
-                }
-                FileOutputStream fs = new FileOutputStream(newPathFile);
-                byte[] buffer = new byte[1444];
-                while ((byteread = inStream.read(buffer)) != -1) {
-                    bytesum += byteread; // 字节 文件大小
-                    fs.write(buffer, 0, byteread);
-                }
-                fs.flush();
-                fs.close();
-                inStream.close();
+            File file = new File(filePath);
+            if (!file.exists()) {
+                file.createNewFile();
             }
+            FileWriter fw = new FileWriter(file,isAppend);
+            PrintWriter pw = new PrintWriter(fw);
+            pw.println(fileContent);
+            pw.close();
+            fw.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * @param oldPath
-     * @param newPath
-     */
-    public static void moveFile(String oldPath, String newPath) {
-        copyFile(oldPath, newPath);
-        delFile(oldPath);
     }
 }
 
